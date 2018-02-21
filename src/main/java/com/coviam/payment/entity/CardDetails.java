@@ -1,6 +1,5 @@
 package com.coviam.payment.entity;
 
-import com.coviam.payment.entity.jpa.support.Auditable;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -15,7 +14,7 @@ import java.io.Serializable;
 @Entity
 @Table(name=CardDetails.TABLE_NAME)
 @EntityListeners(AuditingEntityListener.class)
-public class CardDetails extends Auditable<String> implements Serializable{
+public class CardDetails implements Serializable{
 
     public static final String TABLE_NAME="card_details";
     private static final String ID_COLUMN="ID";

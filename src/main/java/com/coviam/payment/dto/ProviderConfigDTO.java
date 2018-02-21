@@ -1,5 +1,7 @@
 package com.coviam.payment.dto;
 
+import com.coviam.payment.entity.enums.ProviderStatus;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,8 +17,7 @@ public class ProviderConfigDTO implements Serializable {
     private String providerCallbackUrl;
     private String providerCredentialKey1;
     private String providerCredentialKey2;
-    public static enum Status {active, inactive, deferred, cancelled};
-    private ProviderConfigDTO.Status providerStatus = ProviderConfigDTO.Status.active;
+    private String providerStatusDTO = ProviderStatus.ACTIVE.toString();
     private List<BusinessConfigDTO> businessConfigDetailsDTO = new ArrayList<>();
 
     public String getId() {
@@ -67,12 +68,12 @@ public class ProviderConfigDTO implements Serializable {
         this.providerCredentialKey2 = providerCredentialKey2;
     }
 
-    public Enum getProviderStatus() {
-        return providerStatus;
+    public String getProviderStatusDTO() {
+        return providerStatusDTO;
     }
 
-    public void setProviderStatus(ProviderConfigDTO.Status providerStatus) {
-        this.providerStatus = providerStatus;
+    public void setProviderStatusDTO(String providerStatusDTO) {
+        this.providerStatusDTO = providerStatusDTO;
     }
 
     public List<BusinessConfigDTO> getBusinessConfigDetailsDTO() {
@@ -85,31 +86,37 @@ public class ProviderConfigDTO implements Serializable {
 
     @Override
     public boolean equals(Object o) {
+
+
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
         ProviderConfigDTO that = (ProviderConfigDTO) o;
 
-        if (!id.equals(that.id)) return false;
-        if (!providerName.equals(that.providerName)) return false;
-        if (!providerUrl.equals(that.providerUrl)) return false;
-        if (!providerCallbackUrl.equals(that.providerCallbackUrl)) return false;
-        if (!providerCredentialKey1.equals(that.providerCredentialKey1)) return false;
-        if (!providerCredentialKey2.equals(that.providerCredentialKey2)) return false;
-        if (providerStatus != that.providerStatus) return false;
-        return businessConfigDetailsDTO.equals(that.businessConfigDetailsDTO);
+        if (id != null ? !id.equals(that.id) : that.id != null) return false;
+        if (providerName != null ? !providerName.equals(that.providerName) : that.providerName != null) return false;
+        if (providerUrl != null ? !providerUrl.equals(that.providerUrl) : that.providerUrl != null) return false;
+        if (providerCallbackUrl != null ? !providerCallbackUrl.equals(that.providerCallbackUrl) : that.providerCallbackUrl != null)
+            return false;
+        if (providerCredentialKey1 != null ? !providerCredentialKey1.equals(that.providerCredentialKey1) : that.providerCredentialKey1 != null)
+            return false;
+        if (providerCredentialKey2 != null ? !providerCredentialKey2.equals(that.providerCredentialKey2) : that.providerCredentialKey2 != null)
+            return false;
+        if (providerStatusDTO != null ? !providerStatusDTO.equals(that.providerStatusDTO) : that.providerStatusDTO != null)
+            return false;
+        return businessConfigDetailsDTO != null ? businessConfigDetailsDTO.equals(that.businessConfigDetailsDTO) : that.businessConfigDetailsDTO == null;
     }
 
     @Override
     public int hashCode() {
-        int result = id.hashCode();
-        result = 31 * result + providerName.hashCode();
-        result = 31 * result + providerUrl.hashCode();
-        result = 31 * result + providerCallbackUrl.hashCode();
-        result = 31 * result + providerCredentialKey1.hashCode();
-        result = 31 * result + providerCredentialKey2.hashCode();
-        result = 31 * result + providerStatus.hashCode();
-        result = 31 * result + businessConfigDetailsDTO.hashCode();
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (providerName != null ? providerName.hashCode() : 0);
+        result = 31 * result + (providerUrl != null ? providerUrl.hashCode() : 0);
+        result = 31 * result + (providerCallbackUrl != null ? providerCallbackUrl.hashCode() : 0);
+        result = 31 * result + (providerCredentialKey1 != null ? providerCredentialKey1.hashCode() : 0);
+        result = 31 * result + (providerCredentialKey2 != null ? providerCredentialKey2.hashCode() : 0);
+        result = 31 * result + (providerStatusDTO != null ? providerStatusDTO.hashCode() : 0);
+        result = 31 * result + (businessConfigDetailsDTO != null ? businessConfigDetailsDTO.hashCode() : 0);
         return result;
     }
 
@@ -122,7 +129,7 @@ public class ProviderConfigDTO implements Serializable {
                 ", providerCallbackUrl='" + providerCallbackUrl + '\'' +
                 ", providerCredentialKey1='" + providerCredentialKey1 + '\'' +
                 ", providerCredentialKey2='" + providerCredentialKey2 + '\'' +
-                ", providerStatus=" + providerStatus +
+                ", providerStatusDTO='" + providerStatusDTO + '\'' +
                 ", businessConfigDetailsDTO=" + businessConfigDetailsDTO +
                 '}';
     }

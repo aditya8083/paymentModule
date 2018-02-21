@@ -1,6 +1,6 @@
 package com.coviam.payment.entity;
 
-import com.coviam.payment.entity.jpa.support.Auditable;
+import com.coviam.payment.entity.enums.ProviderStatus;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -24,7 +24,7 @@ import java.util.List;
 @Entity
 @Table(name=ProviderConfig.TABLE_NAME)
 @EntityListeners(AuditingEntityListener.class)
-public class ProviderConfig  extends Auditable<String> implements Serializable{
+public class ProviderConfig implements Serializable{
 
     public static final String TABLE_NAME="provider_config";
     private static final String ID_COLUMN="ID";
@@ -55,12 +55,9 @@ public class ProviderConfig  extends Auditable<String> implements Serializable{
     @NotNull
     private String providerCredentialKey2;
 
-
-    public static enum Status {active, inactive, deferred, cancelled};
-
     @Column(name = "providerStatus")
     @Enumerated(EnumType.STRING)
-    private Status providerStatus = Status.active;
+    private ProviderStatus providerStatus = ProviderStatus.ACTIVE;
 
     @OneToMany(
             mappedBy = "providerConfig",
@@ -122,7 +119,7 @@ public class ProviderConfig  extends Auditable<String> implements Serializable{
         return providerStatus;
     }
 
-    public void setProviderStatus(Status providerStatus) {
+    public void setProviderStatus(ProviderStatus providerStatus) {
         this.providerStatus = providerStatus;
     }
 

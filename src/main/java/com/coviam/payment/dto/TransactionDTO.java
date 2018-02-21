@@ -1,6 +1,6 @@
 package com.coviam.payment.dto;
 
-import com.coviam.payment.entity.Transaction;
+import com.coviam.payment.entity.enums.PaymentStatus;
 
 import java.io.Serializable;
 
@@ -14,8 +14,7 @@ public class TransactionDTO implements Serializable {
     private Double amount;
     private String providerId;
     private String paymentMethod;
-    public static enum Status {PENDING, SUCCESSFUL, DEFERRED, CANCELLED};
-    private Transaction.Status paymentStatus = Transaction.Status.PENDING;
+    private String paymentStatusDTO = PaymentStatus.PENDING.toString();
     private String customerId;
     private CardDetailsDTO cardDetailsDTO;
 
@@ -59,12 +58,12 @@ public class TransactionDTO implements Serializable {
         this.paymentMethod = paymentMethod;
     }
 
-    public Transaction.Status getPaymentStatus() {
-        return paymentStatus;
+    public String getPaymentStatusDTO() {
+        return paymentStatusDTO;
     }
 
-    public void setPaymentStatus(Transaction.Status paymentStatus) {
-        this.paymentStatus = paymentStatus;
+    public void setPaymentStatusDTO(String paymentStatusDTO) {
+        this.paymentStatusDTO = paymentStatusDTO;
     }
 
     public String getCustomerId() {
@@ -90,40 +89,42 @@ public class TransactionDTO implements Serializable {
 
         TransactionDTO that = (TransactionDTO) o;
 
-        if (!id.equals(that.id)) return false;
-        if (!superPnr.equals(that.superPnr)) return false;
-        if (!amount.equals(that.amount)) return false;
-        if (!providerId.equals(that.providerId)) return false;
-        if (!paymentMethod.equals(that.paymentMethod)) return false;
-        if (paymentStatus != that.paymentStatus) return false;
-        if (!customerId.equals(that.customerId)) return false;
-        return cardDetailsDTO.equals(that.cardDetailsDTO);
+        if (id != null ? !id.equals(that.id) : that.id != null) return false;
+        if (superPnr != null ? !superPnr.equals(that.superPnr) : that.superPnr != null) return false;
+        if (amount != null ? !amount.equals(that.amount) : that.amount != null) return false;
+        if (providerId != null ? !providerId.equals(that.providerId) : that.providerId != null) return false;
+        if (paymentMethod != null ? !paymentMethod.equals(that.paymentMethod) : that.paymentMethod != null)
+            return false;
+        if (paymentStatusDTO != null ? !paymentStatusDTO.equals(that.paymentStatusDTO) : that.paymentStatusDTO != null)
+            return false;
+        if (customerId != null ? !customerId.equals(that.customerId) : that.customerId != null) return false;
+        return cardDetailsDTO != null ? cardDetailsDTO.equals(that.cardDetailsDTO) : that.cardDetailsDTO == null;
     }
 
     @Override
     public int hashCode() {
-        int result = id.hashCode();
-        result = 31 * result + superPnr.hashCode();
-        result = 31 * result + amount.hashCode();
-        result = 31 * result + providerId.hashCode();
-        result = 31 * result + paymentMethod.hashCode();
-        result = 31 * result + paymentStatus.hashCode();
-        result = 31 * result + customerId.hashCode();
-        result = 31 * result + cardDetailsDTO.hashCode();
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (superPnr != null ? superPnr.hashCode() : 0);
+        result = 31 * result + (amount != null ? amount.hashCode() : 0);
+        result = 31 * result + (providerId != null ? providerId.hashCode() : 0);
+        result = 31 * result + (paymentMethod != null ? paymentMethod.hashCode() : 0);
+        result = 31 * result + (paymentStatusDTO != null ? paymentStatusDTO.hashCode() : 0);
+        result = 31 * result + (customerId != null ? customerId.hashCode() : 0);
+        result = 31 * result + (cardDetailsDTO != null ? cardDetailsDTO.hashCode() : 0);
         return result;
     }
 
     @Override
     public String toString() {
         return "TransactionDTO{" +
-                "id=" + id +
+                "id='" + id + '\'' +
                 ", superPnr='" + superPnr + '\'' +
                 ", amount=" + amount +
                 ", providerId='" + providerId + '\'' +
                 ", paymentMethod='" + paymentMethod + '\'' +
-                ", paymentStatus=" + paymentStatus +
+                ", paymentStatusDTO='" + paymentStatusDTO + '\'' +
                 ", customerId='" + customerId + '\'' +
-                ", cardDetails=" + cardDetailsDTO +
+                ", cardDetailsDTO=" + cardDetailsDTO +
                 '}';
     }
 }

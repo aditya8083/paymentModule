@@ -1,20 +1,17 @@
 package com.coviam.payment.services.impl;
 
 
-import com.coviam.payment.dto.BookingDTO;
-import com.coviam.payment.dto.UpdateBookingRequestDTO;
+import com.coviam.payment.dto.PaymentStatusDTO;
 import com.coviam.payment.entity.Transaction;
+import com.coviam.payment.entity.enums.PaymentStatus;
+import com.coviam.payment.kafka.producer.KafkaProducer;
 import com.coviam.payment.repository.TransactionRepository;
 import com.coviam.payment.services.TransactionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -37,6 +34,9 @@ public class TransactionServiceImpl implements TransactionService {
     @Autowired
     RestTemplate restTemplate;
 
+    @Autowired
+    KafkaProducer producer;
+
     private static final Logger LOGGER = LoggerFactory.getLogger(TransactionServiceImpl.class);
 
     @Override
@@ -57,26 +57,27 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public ResponseEntity<BookingDTO> processPayment(ResponseEntity<Boolean> paymentResponseEntity, Transaction transaction) {
+    public Transaction processPayment(ResponseEntity<Boolean> paymentResponseEntity, Transaction transaction) {
 
-        Transaction.Status paymentStatus;
+        PaymentStatus paymentStatus;
         final String uriString = updateBookingPayment;
         if (paymentResponseEntity.getStatusCode() != HttpStatus.OK) {
-            paymentStatus = Transaction.Status.DEFERRED;
+            paymentStatus = PaymentStatus.DEFERRED;
         }else{
-            paymentStatus = Transaction.Status.SUCCESSFUL;
+            paymentStatus = PaymentStatus.SUCCESSFUL;
         }
 
         transaction.setPaymentStatus(paymentStatus);
         Transaction updatedTransaction = save(transaction);
+        PaymentStatusDTO paymentStatusDTO = PaymentStatusDTO.newBuilder()
+                .setSuperPnr(updatedTransaction.getSuperPnr())
+                .setPaymentId(updatedTransaction.getId())
+                .setStatus(updatedTransaction.getPaymentStatus().toString()).build();
 
-        UpdateBookingRequestDTO updateBookingRequestDTO = new UpdateBookingRequestDTO.Builder().superPnr(updatedTransaction.getSuperPnr()).paymentid(updatedTransaction.getId()).status(updatedTransaction.getPaymentStatus()).build();
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", MediaType.APPLICATION_JSON_VALUE);
-        HttpEntity<UpdateBookingRequestDTO> entity = new HttpEntity<UpdateBookingRequestDTO>(updateBookingRequestDTO, headers);
-        ResponseEntity<BookingDTO> bookingResponse = restTemplate.exchange(uriString, HttpMethod.POST, entity, BookingDTO.class);
+        //send message to kafka
+        producer.send(paymentStatusDTO);
 
-        return bookingResponse;
+        return updatedTransaction;
 
     }
 

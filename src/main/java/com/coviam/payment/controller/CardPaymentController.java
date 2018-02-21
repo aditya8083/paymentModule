@@ -1,10 +1,11 @@
 package com.coviam.payment.controller;
 
-import com.coviam.payment.dto.BookingDTO;
+import com.coviam.payment.dto.PaymentStatusDTO;
 import com.coviam.payment.dto.TransactionDTO;
 import com.coviam.payment.entity.CardDetails;
 import com.coviam.payment.entity.ProviderConfig;
 import com.coviam.payment.entity.Transaction;
+import com.coviam.payment.kafka.producer.KafkaProducer;
 import com.coviam.payment.services.CardPaymentService;
 import com.coviam.payment.services.ProviderService;
 import com.coviam.payment.services.TransactionService;
@@ -25,10 +26,15 @@ public class CardPaymentController {
 
     @Autowired
     TransactionService transactionService;
+
     @Autowired
     CardPaymentService cardPaymentService;
+
     @Autowired
     ProviderService providerService;
+
+    @Autowired
+    KafkaProducer kafkaProducer;
 
     @RequestMapping(
             value = "/makePayment",
@@ -36,27 +42,31 @@ public class CardPaymentController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<?> makePayment(@RequestBody TransactionDTO transactionDTO) {
-        if(transactionDTO == null){
+        if (transactionDTO == null) {
             return null;
         }
 
         Transaction transaction = new Transaction();
         BeanUtils.copyProperties(transactionDTO, transaction);
-        Transaction savedTransaction=transactionService.save(transaction);
+        Transaction savedTransaction = transactionService.save(transaction);
 
-        CardDetails cardDetails=new CardDetails();
-        BeanUtils.copyProperties(transactionDTO.getCardDetailsDTO(),cardDetails);
+        CardDetails cardDetails = new CardDetails();
+        BeanUtils.copyProperties(transactionDTO.getCardDetailsDTO(), cardDetails);
         CardDetails savedCardDetails = cardPaymentService.save(cardDetails);
 
         ProviderConfig providerConfig = providerService.findOne(transaction.getProviderId());
 
-        ResponseEntity<Boolean> paymentResponseEntity = cardPaymentService.pay(transactionDTO.getCardDetailsDTO(),providerConfig);
+        ResponseEntity<Boolean> paymentResponseEntity = cardPaymentService.pay(transactionDTO.getCardDetailsDTO(), providerConfig);
 
-        if(paymentResponseEntity.getStatusCode()!=HttpStatus.OK){
+        if (paymentResponseEntity.getStatusCode() != HttpStatus.OK) {
             return new ResponseEntity<String>("payment failed", HttpStatus.NOT_ACCEPTABLE);
         }
-        ResponseEntity<BookingDTO> bookingDTOResponseEntity = transactionService.processPayment(paymentResponseEntity,transaction);
+        Transaction updatedTransaction = transactionService.processPayment(paymentResponseEntity, transaction);
 
-        return bookingDTOResponseEntity;
+        TransactionDTO updatedTransactionDTO = new TransactionDTO();
+        BeanUtils.copyProperties(updatedTransaction, updatedTransactionDTO);
+        return new ResponseEntity<TransactionDTO>(transactionDTO, HttpStatus.ACCEPTED);
     }
+
+
 }

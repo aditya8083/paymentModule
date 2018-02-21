@@ -1,6 +1,6 @@
 package com.coviam.payment.entity;
 
-import com.coviam.payment.entity.jpa.support.Auditable;
+import com.coviam.payment.entity.enums.PaymentStatus;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -17,7 +17,7 @@ import java.io.Serializable;
 @Entity
 @Table(name=Transaction.TABLE_NAME)
 @EntityListeners(AuditingEntityListener.class)
-public class Transaction  extends Auditable<String> implements Serializable{
+public class Transaction implements Serializable{
     public static final String TABLE_NAME="transaction";
     private static final String ID_COLUMN="ID";
 
@@ -39,11 +39,9 @@ public class Transaction  extends Auditable<String> implements Serializable{
     @Column(name = "paymentMethod")
     private String paymentMethod;
 
-    public static enum Status {PENDING, SUCCESSFUL, DEFERRED, CANCELLED};
-
     @Column(name = "paymentStatus")
     @Enumerated(EnumType.STRING)
-    private Status paymentStatus;
+    private PaymentStatus paymentStatus;
 
     @Column(name="customerId")
     private String customerId;
@@ -88,11 +86,11 @@ public class Transaction  extends Auditable<String> implements Serializable{
         this.paymentMethod = paymentMethod;
     }
 
-    public Status getPaymentStatus() {
+    public PaymentStatus getPaymentStatus() {
         return paymentStatus;
     }
 
-    public void setPaymentStatus(Status paymentStatus) {
+    public void setPaymentStatus(PaymentStatus paymentStatus) {
         this.paymentStatus = paymentStatus;
     }
 

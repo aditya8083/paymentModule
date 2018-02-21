@@ -1,6 +1,6 @@
 package com.coviam.payment.dto;
 
-import com.coviam.payment.dto.enumsDTO.ProviderStatusDTO;
+import com.coviam.payment.entity.enums.ProviderStatus;
 
 import java.io.Serializable;
 
@@ -13,7 +13,7 @@ public class BusinessConfigDTO implements Serializable {
     private String busniessId;
     private String maxAmount;
     private String minAmount;
-    private Enum busniessStatus = ProviderStatusDTO.active;
+    private String busniessStatus = ProviderStatus.ACTIVE.toString();
     private ProviderConfigDTO providerConfigDTO;
 
     public String getId() {
@@ -48,11 +48,11 @@ public class BusinessConfigDTO implements Serializable {
         this.minAmount = minAmount;
     }
 
-    public Enum getBusniessStatus() {
+    public String getBusniessStatus() {
         return busniessStatus;
     }
 
-    public void setBusniessStatus(Enum busniessStatus) {
+    public void setBusniessStatus(String busniessStatus) {
         this.busniessStatus = busniessStatus;
     }
 
@@ -71,22 +71,23 @@ public class BusinessConfigDTO implements Serializable {
 
         BusinessConfigDTO that = (BusinessConfigDTO) o;
 
-        if (!id.equals(that.id)) return false;
-        if (!busniessId.equals(that.busniessId)) return false;
-        if (!maxAmount.equals(that.maxAmount)) return false;
-        if (!minAmount.equals(that.minAmount)) return false;
-        if (!busniessStatus.equals(that.busniessStatus)) return false;
-        return providerConfigDTO.equals(that.providerConfigDTO);
+        if (id != null ? !id.equals(that.id) : that.id != null) return false;
+        if (busniessId != null ? !busniessId.equals(that.busniessId) : that.busniessId != null) return false;
+        if (maxAmount != null ? !maxAmount.equals(that.maxAmount) : that.maxAmount != null) return false;
+        if (minAmount != null ? !minAmount.equals(that.minAmount) : that.minAmount != null) return false;
+        if (busniessStatus != null ? !busniessStatus.equals(that.busniessStatus) : that.busniessStatus != null)
+            return false;
+        return providerConfigDTO != null ? providerConfigDTO.equals(that.providerConfigDTO) : that.providerConfigDTO == null;
     }
 
     @Override
     public int hashCode() {
-        int result = id.hashCode();
-        result = 31 * result + busniessId.hashCode();
-        result = 31 * result + maxAmount.hashCode();
-        result = 31 * result + minAmount.hashCode();
-        result = 31 * result + busniessStatus.hashCode();
-        result = 31 * result + providerConfigDTO.hashCode();
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (busniessId != null ? busniessId.hashCode() : 0);
+        result = 31 * result + (maxAmount != null ? maxAmount.hashCode() : 0);
+        result = 31 * result + (minAmount != null ? minAmount.hashCode() : 0);
+        result = 31 * result + (busniessStatus != null ? busniessStatus.hashCode() : 0);
+        result = 31 * result + (providerConfigDTO != null ? providerConfigDTO.hashCode() : 0);
         return result;
     }
 
@@ -97,7 +98,7 @@ public class BusinessConfigDTO implements Serializable {
                 ", busniessId='" + busniessId + '\'' +
                 ", maxAmount='" + maxAmount + '\'' +
                 ", minAmount='" + minAmount + '\'' +
-                ", busniessStatus=" + busniessStatus +
+                ", busniessStatus='" + busniessStatus + '\'' +
                 ", providerConfigDTO=" + providerConfigDTO +
                 '}';
     }

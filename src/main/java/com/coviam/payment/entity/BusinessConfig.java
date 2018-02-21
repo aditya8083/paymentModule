@@ -1,7 +1,6 @@
 package com.coviam.payment.entity;
 
 import com.coviam.payment.entity.enums.ProviderStatus;
-import com.coviam.payment.entity.jpa.support.Auditable;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -9,6 +8,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -19,7 +20,7 @@ import java.io.Serializable;
 @Entity
 @Table(name=BusinessConfig.TABLE_NAME)
 @EntityListeners(AuditingEntityListener.class)
-public class BusinessConfig extends Auditable<String> implements Serializable{
+public class BusinessConfig implements Serializable{
 
     public static final String TABLE_NAME="business_config";
     private static final String ID_COLUMN="ID";
@@ -39,7 +40,8 @@ public class BusinessConfig extends Auditable<String> implements Serializable{
     private String minAmount;
 
     @Column(name = "busniessStatus")
-    private Enum busniessStatus = ProviderStatus.active;
+    @Enumerated(EnumType.STRING)
+    private Enum busniessStatus = ProviderStatus.ACTIVE;
 
     @ManyToOne
     @JoinColumn(name = "providerConfig_id")
